@@ -1,9 +1,9 @@
 <?php
 
 // Location where hosted images will be stored
-define('IMG_ROOT', '/var/www/pictures/');
+define('IMG_ROOT', '/var/images/');
 // Pre-shared key - must match IMAGE_PSK in gazelle config
-define('PSK', 'pwgen -s | encrypt');
+define('PSK', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
 
 ini_set('memory_limit', '256M');
 
