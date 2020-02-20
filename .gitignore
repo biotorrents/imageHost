@@ -1,2 +1,17 @@
+##
+## https://pjc.is/me/templates
+#
+
+# Common junk files
 .DS_Store
-*~
+*.sw*
+
+# Private files and backups
+*.*~
+*.doc
+*.docx
+*.eml
+
+# GPG file signatures for PDF releases
+# To be replaced by signed Git commits
+*.pdf.asc
