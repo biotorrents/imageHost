@@ -1,3 +1,53 @@
+# BioTorents.de
+
+server {
+    listen 443 ssl http2;
+    root /var/www/html/pics.you.com;
+    server_name pics.you.com;
+
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+
+    ssl_certificate fullchain.pem; # managed by Certbot
+    ssl_certificate_key privkey.pem; # managed by Certbot
+
+    location / {
+        try_files /index.php =500;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock; # !
+        fastcgi_index index.php;
+        include /etc/nginx/params/fastcgi_params; # !
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+        # https://stackoverflow.com/a/23845727
+        fastcgi_buffers 16 16k;
+        fastcgi_buffer_size 32k;
+    }
+
+    location /thumb/ {
+        try_files /index.php =500;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock; # !
+        fastcgi_index index.php;
+        include /etc/nginx/params/fastcgi_params; # !
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+        image_filter_buffer 50M;
+        image_filter resize 400 400;
+
+        # https://stackoverflow.com/a/23845727
+        fastcgi_buffers 16 16k;
+        fastcgi_buffer_size 32k;
+    }
+
+    # https://nginx.org/en/docs/http/ngx_http_access_module.html
+    location ~ /.git/ {
+        deny all;
+    }
+}
+
+
+# Oppaitime
+
 server {
 	listen 80;
 	server_name img.your.domain;
@@ -11,6 +61,7 @@ server {
 		include fastcgi_params;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 	}
+
 	location /thumb/ {
 	  try_files /index.php =500;
 		fastcgi_split_path_info ^(.+\.php)(/.+)$;
