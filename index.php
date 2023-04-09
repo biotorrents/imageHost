@@ -7,7 +7,7 @@ declare(strict_types=1);
  * image proxy configuration
  */
 
-# important!
+# this is very important!
 ini_set("memory_limit", "256M");
 
 # hosted image storage location
@@ -101,19 +101,19 @@ if (file_exists($imagePath)) {
 /**
  * contentType
  *
+ * Returns the content type of a file based on its first few bytes.
+ *
  * @param string $data
  * @return string
+ *
+ * @see https://en.wikipedia.org/wiki/List_of_file_signatures
+ * @see https://github.com/rosell-dk/image-mime-type-sniffer
  */
 function contentType(string $data): string
 {
-    # image/png
-    if (!strncmp($data, pack("H*", "89504E47"), 4)) {
-        return "image/png";
-    }
-
-    # image/jpeg
-    if (!strncmp($data, pack("H*", "FFD8"), 2)) {
-        return "image/jpeg";
+    # image/bmp
+    if (!strncmp($data, "BM", 2)) {
+        return "image/bmp";
     }
 
     # image/gif
@@ -121,19 +121,34 @@ function contentType(string $data): string
         return "image/gif";
     }
 
-    # video/webm
-    if (strlen($data) > 35 && !substr_compare($data, "webm", 31, 4)) {
-        return "video/webm";
+    # image/jpeg
+    if (!strncmp($data, pack("H*", "FFD8FF"), 3)) {
+        return "image/jpeg";
     }
 
-    # image/bmp
-    if (!strncmp($data, "BM", 2)) {
-        return "image/bmp";
+    # image/jxl
+    if (!strncmp($data, pack("H*", "0000000C4A584C200D0A870A"), 12) || !strncmp($data, pack("H*", "FF0A"), 2)) {
+        return "image/jxl";
+    }
+
+    # image/png
+    if (!strncmp($data, pack("H*", "89504E470D0A1A0A"), 8)) {
+        return "image/png";
     }
 
     # image/tiff
     if (!strncmp($data, "II", 2) || !strncmp($data, "MM", 2)) {
         return "image/tiff";
+    }
+
+    # image/webp
+    if (!strncmp($data, "RIFF", 4)) {
+        return "image/webp";
+    }
+
+    # video/webm
+    if (strlen($data) > 35 && !substr_compare($data, "webm", 31, 4)) {
+        return "video/webm";
     }
 
     # application/octet-stream
